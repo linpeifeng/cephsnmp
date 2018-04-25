@@ -1,0 +1,123 @@
+CEPH-MIB DEFINITIONS ::= BEGIN
+
+--
+-- MIB objects for the ceph cluster manager implementation
+--
+
+IMPORTS
+    MODULE-IDENTITY, OBJECT-TYPE, Integer32,
+    NOTIFICATION-TYPE, enterprises          FROM SNMPv2-SMI
+    SnmpAdminString                         FROM SNMP-FRAMEWORK-MIB
+    netSnmp                                 FROM NET-SNMP-MIB
+    RowStatus, StorageType                  FROM SNMPv2-TC
+    InetAddressType, InetAddress            FROM INET-ADDRESS-MIB
+;
+
+ceph MODULE-IDENTITY
+    LAST-UPDATED "201711202100Z"
+    ORGANIZATION "www.ceph.com"
+    CONTACT-INFO    
+        "name:  Pei Feng Lin
+        email:  linpeifeng@gmail.com"
+    DESCRIPTION "MIB objects for the Ceph cluster manager implementation"
+
+    REVISION    "201711202100Z"
+    DESCRIPTION "First draft"
+
+    ::= { enterprises 50495 }
+
+--
+-- top level structure
+--
+cephNotification   OBJECT IDENTIFIER ::= { ceph 1 }
+cephTrap           OBJECT IDENTIFIER ::= { ceph 2 }
+
+--
+--  ceph Notifications
+--
+
+cephNotificationCapacity OBJECT-TYPE
+    SYNTAX      OCTET STRING (SIZE(1..256))
+    MAX-ACCESS  accessible-for-notify
+    STATUS      current
+    DESCRIPTION
+        "The cluster capacity is near to full."      
+::= { cephNotification 1 }
+
+cephNotificationStatus OBJECT-TYPE
+    SYNTAX      OCTET STRING (SIZE(1..256))
+    MAX-ACCESS  accessible-for-notify
+    STATUS      current
+    DESCRIPTION
+        "The cluster is not available or read only."
+::= { cephNotification 2 }
+
+cephNotificationRecovery OBJECT-TYPE
+    SYNTAX      OCTET STRING (SIZE(1..256))
+    MAX-ACCESS  accessible-for-notify
+    STATUS      current
+    DESCRIPTION
+        "The data fails to recover."
+::= { cephNotification 3 }
+
+cephNotificationNode OBJECT-TYPE
+    SYNTAX      OCTET STRING (SIZE(1..256))
+    MAX-ACCESS  accessible-for-notify
+    STATUS      current
+    DESCRIPTION
+        "The data node is not available. e.g: the machine is power off, broken, or the network is not reachable."
+::= { cephNotification 4 }
+
+cephNotificationDisk OBJECT-TYPE
+    SYNTAX      OCTET STRING (SIZE(1..256))
+    MAX-ACCESS  accessible-for-notify
+    STATUS      current
+    DESCRIPTION
+        "The disk is not available, e.g. the disk is broken, or plug out.."
+::= { cephNotification 5 }
+
+cephNotificationNetwork OBJECT-TYPE
+    SYNTAX      OCTET STRING (SIZE(1..256))
+    MAX-ACCESS  accessible-for-notify
+    STATUS      current
+    DESCRIPTION
+        "The networking is broken."
+::= { cephNotification 6 }
+
+cephNotificationLevel OBJECT-TYPE 
+    SYNTAX      INTEGER {
+                     emergency(0),
+                     alert    (1),
+                     critical (2),
+                     error    (3),
+                     warning  (4),
+                     notice   (5),
+                     info     (6),
+                     debug    (7)
+                }
+    MAX-ACCESS  accessible-for-notify
+    STATUS      current 
+    DESCRIPTION 
+        "The (minimum) priority level for which this logging entry."
+::= { cephNotification 7 }
+
+--
+--  ceph Traps
+--
+
+cephNotificationTrap NOTIFICATION-TYPE
+    OBJECTS {
+        cephNotificationCapacity,
+        cephNotificationStatus,
+        cephNotificationRecovery,
+        cephNotificationNode,
+        cephNotificationDisk,
+        cephNotificationNetwork,
+        cephNotificationLevel
+    }
+    STATUS      current
+    DESCRIPTION
+        "Ceph notification trap"
+::= { cephTrap 1 }
+
+END
